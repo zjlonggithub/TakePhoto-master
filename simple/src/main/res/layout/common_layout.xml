@@ -2,18 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/bg_"
     >
 
-        <Button
-            android:id="@+id/btnPickByTake"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:layout_marginBottom = "20dp"
-            android:layout_alignParentBottom="true"
-            android:onClick="onClick"
-            android:text="拍照" />
+    <Button
+        android:id="@+id/btnPickByTake"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button_selector"
+        android:onClick="onClick"
+        android:padding="10dp"
+        android:text="拍   照"
+        android:textColor="#E605ADFB"
+        android:textSize="30sp" />
 
 
     <LinearLayout

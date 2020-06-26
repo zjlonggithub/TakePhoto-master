@@ -1,13 +1,19 @@
 package org.devio.simple;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.*;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -40,40 +46,51 @@ import java.util.ArrayList;
 public class ResultActivity extends Activity {
     ArrayList<TImage> images;
 
+    String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+    String savePhotosPath = "/takePhotos/";
+    String temp = "/temp/";
+    FileHelper fhelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_layout);
         images = (ArrayList<TImage>) getIntent().getSerializableExtra("images");
         showImg();
+
+        Button savebtn_ = (Button)(findViewById(R.id.savebtn));
+        savebtn_.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveImg();
+            }
+        });
     }
 
     private void showImg() {
-        LinearLayout  layout = (LinearLayout ) findViewById(R.id.llImages);
-        for (int i = 0, j = images.size(); i < j - 1; i += 2) {
-            View view = LayoutInflater.from(this).inflate(R.layout.image_show, null);
-            ImageView imageView1 = (ImageView) view.findViewById(R.id.imgShow1);
-            ImageView imageView2 = (ImageView) view.findViewById(R.id.imgShow2);
-            Glide.with(this).load(new File(images.get(i).getCompressPath())).into(imageView1);
-            Glide.with(this).load(new File(images.get(i + 1).getCompressPath())).into(imageView2);
+        ImageView  imageV = (ImageView ) findViewById(R.id.imgShow1);
+        String temPath = images.get(images.size() - 1).getCompressPath();
+        Glide.with(this).load(new File(temPath)).into(imageV);
+    }
 
-            //该布局在LinearLayout下
-            //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-            //lp.gravity= Gravity.CENTER;  //这才是布局文件中的Android:layout_gravity属性
-            //view.setLayoutParams(lp);
-            layout.addView(view);
+    private void saveImg(){
+        EditText photoNameTxt = (EditText)(findViewById(R.id.editTextTextPersonName));
 
-        }
-        if (images.size() % 2 == 1) {
-            View view = LayoutInflater.from(this).inflate(R.layout.image_show, null);
-            ImageView imageView1 = (ImageView) view.findViewById(R.id.imgShow1);
-            Glide.with(this).load(new File(images.get(images.size() - 1).getCompressPath())).into(imageView1);
-            //该布局在LinearLayout下
-            //LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-            //lp.gravity= Gravity.CENTER;  //这才是布局文件中的Android:layout_gravity属性
-            //view.setLayoutParams(lp);
-            layout.addView(view);
+        String photoNameStr = photoNameTxt.getText().toString();
+        if(photoNameStr== null || photoNameStr.isEmpty()){
+            Toast.makeText(this,"图像信息不能为空",Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        fhelper = new FileHelper();
+        String temPath = images.get(images.size() - 1).getCompressPath();
+        String newPath = absolutePath + savePhotosPath ;
+        String newFileName = photoNameStr + ".jpg";
+
+        fhelper.moveFile(temPath,newPath,newFileName);
+        fhelper.removeFile(absolutePath + temp);
+
+        Intent intent = new Intent(this, SimpleActivity.class);
+        startActivity(intent);
     }
 }
